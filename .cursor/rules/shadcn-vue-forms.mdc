@@ -1,0 +1,511 @@
+# shadcn-vue Form 컴포넌트 가이드
+
+Form 관련 컴포넌트들은 VeeValidate와 Zod를 기반으로 구축되어 있습니다. 타입 안전성과 접근성을 보장하며, 사용자 친화적인 폼을 만들 수 있습니다.
+
+## 기본 Form 컴포넌트
+
+### 필수 컴포넌트들
+
+```vue
+<script setup lang="ts">
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+</script>
+```
+
+### 기본 Form 패턴 (VeeValidate + Zod)
+
+```vue
+<template>
+  <form @submit="onSubmit">
+    <FormField v-slot="{ componentField }" name="username">
+      <FormItem>
+        <FormLabel>사용자명</FormLabel>
+        <FormControl>
+          <Input type="text" placeholder="사용자명을 입력하세요" v-bind="componentField" />
+        </FormControl>
+        <FormDescription>
+          공개적으로 표시될 사용자명입니다.
+        </FormDescription>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+    <Button type="submit">제출</Button>
+  </form>
+</template>
+
+<script setup lang="ts">
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+
+const formSchema = toTypedSchema(z.object({
+  username: z.string().min(2, '사용자명은 최소 2자 이상이어야 합니다.').max(50),
+}))
+
+const form = useForm({
+  validationSchema: formSchema,
+})
+
+const onSubmit = form.handleSubmit((values) => {
+  console.log('Form submitted:', values)
+})
+</script>
+```
+
+## Input 컴포넌트들
+
+### 기본 Input
+
+```vue
+<template>
+  <FormField v-slot="{ componentField }" name="email">
+    <FormItem>
+      <FormLabel>이메일</FormLabel>
+      <FormControl>
+        <Input type="email" placeholder="이메일을 입력하세요" v-bind="componentField" />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  </FormField>
+</template>
+
+<script setup lang="ts">
+import { Input } from '@/components/ui/input'
+</script>
+```
+
+### Textarea
+
+```vue
+<template>
+  <FormField v-slot="{ componentField }" name="description">
+    <FormItem>
+      <FormLabel>설명</FormLabel>
+      <FormControl>
+        <Textarea placeholder="설명을 입력하세요" v-bind="componentField" />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  </FormField>
+</template>
+
+<script setup lang="ts">
+import { Textarea } from '@/components/ui/textarea'
+</script>
+```
+
+### Select
+
+```vue
+<template>
+  <FormField v-slot="{ componentField }" name="country">
+    <FormItem>
+      <FormLabel>국가</FormLabel>
+      <Select v-bind="componentField">
+        <FormControl>
+          <SelectTrigger>
+            <SelectValue placeholder="국가를 선택하세요" />
+          </SelectTrigger>
+        </FormControl>
+        <SelectContent>
+          <SelectItem value="kr">한국</SelectItem>
+          <SelectItem value="us">미국</SelectItem>
+          <SelectItem value="jp">일본</SelectItem>
+        </SelectContent>
+      </Select>
+      <FormMessage />
+    </FormItem>
+  </FormField>
+</template>
+
+<script setup lang="ts">
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+</script>
+```
+
+### Checkbox
+
+```vue
+<template>
+  <FormField v-slot="{ value, handleChange }" name="acceptTerms">
+    <FormItem class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+      <FormControl>
+        <Checkbox :checked="value" @update:checked="handleChange" />
+      </FormControl>
+      <div class="space-y-1 leading-none">
+        <FormLabel>
+          이용약관에 동의합니다
+        </FormLabel>
+        <FormDescription>
+          <a href="#" class="text-primary underline">이용약관</a>을 읽고 동의합니다.
+        </FormDescription>
+      </div>
+    </FormItem>
+  </FormField>
+</template>
+
+<script setup lang="ts">
+import { Checkbox } from '@/components/ui/checkbox'
+</script>
+```
+
+### Radio Group
+
+```vue
+<template>
+  <FormField v-slot="{ componentField }" name="type">
+    <FormItem class="space-y-3">
+      <FormLabel>알림 방식</FormLabel>
+      <FormControl>
+        <RadioGroup class="flex flex-col space-y-1" v-bind="componentField">
+          <div class="flex items-center space-x-2">
+            <RadioGroupItem value="email" id="email" />
+            <Label for="email">이메일</Label>
+          </div>
+          <div class="flex items-center space-x-2">
+            <RadioGroupItem value="sms" id="sms" />
+            <Label for="sms">SMS</Label>
+          </div>
+          <div class="flex items-center space-x-2">
+            <RadioGroupItem value="push" id="push" />
+            <Label for="push">푸시 알림</Label>
+          </div>
+        </RadioGroup>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  </FormField>
+</template>
+
+<script setup lang="ts">
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+</script>
+```
+
+### Switch
+
+```vue
+<template>
+  <FormField v-slot="{ value, handleChange }" name="marketingEmails">
+    <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
+      <div class="space-y-0.5">
+        <FormLabel class="text-base">마케팅 이메일</FormLabel>
+        <FormDescription>
+          새로운 제품 및 서비스에 대한 이메일을 받아보세요.
+        </FormDescription>
+      </div>
+      <FormControl>
+        <Switch :checked="value" @update:checked="handleChange" />
+      </FormControl>
+    </FormItem>
+  </FormField>
+</template>
+
+<script setup lang="ts">
+import { Switch } from '@/components/ui/switch'
+</script>
+```
+
+## Date Picker
+
+```vue
+<template>
+  <FormField v-slot="{ componentField }" name="dob">
+    <FormItem class="flex flex-col">
+      <FormLabel>생년월일</FormLabel>
+      <Popover>
+        <PopoverTrigger as-child>
+          <FormControl>
+            <Button
+              variant="outline"
+              :class="[
+                'w-[280px] justify-start text-left font-normal',
+                !componentField.value && 'text-muted-foreground',
+              ]"
+            >
+              <CalendarIcon class="mr-2 h-4 w-4" />
+              {{ componentField.value ? formatDate(componentField.value) : '날짜를 선택하세요' }}
+            </Button>
+          </FormControl>
+        </PopoverTrigger>
+        <PopoverContent class="w-auto p-0">
+          <Calendar
+            v-model="componentField.value"
+            mode="single"
+            :disabled="(date) => date > new Date() || date < new Date('1900-01-01')"
+            initial-focus
+          />
+        </PopoverContent>
+      </Popover>
+      <FormDescription>
+        생년월일을 선택하세요.
+      </FormDescription>
+      <FormMessage />
+    </FormItem>
+  </FormField>
+</template>
+
+<script setup lang="ts">
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { CalendarIcon } from 'lucide-vue-next'
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+</script>
+```
+
+## AutoForm (레거시)
+
+자동으로 Zod 스키마에서 폼을 생성합니다:
+
+```vue
+<template>
+  <AutoForm
+    :schema="formSchema"
+    :field-config="{
+      username: {
+        description: '사용자명을 입력하세요',
+        inputProps: {
+          placeholder: '사용자명'
+        }
+      }
+    }"
+    @submit="onSubmit"
+  >
+    <Button type="submit">제출</Button>
+  </AutoForm>
+</template>
+
+<script setup lang="ts">
+import { AutoForm } from '@/components/ui/auto-form'
+import * as z from 'zod'
+
+const formSchema = z.object({
+  username: z.string().min(2).max(50),
+  email: z.string().email(),
+  age: z.number().min(18).max(100),
+  acceptTerms: z.boolean(),
+})
+
+const onSubmit = (data: any) => {
+  console.log('Form submitted:', data)
+}
+</script>
+```
+
+## 고급 Form 패턴
+
+### 다중 스텝 폼
+
+```vue
+<template>
+  <div class="space-y-6">
+    <div class="space-y-2">
+      <h2 class="text-2xl font-semibold">단계 {{ currentStep }} / {{ totalSteps }}</h2>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div 
+          class="bg-primary h-2 rounded-full transition-all duration-300"
+          :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
+        />
+      </div>
+    </div>
+
+    <form @submit="handleSubmit">
+      <!-- 단계 1: 개인정보 -->
+      <div v-if="currentStep === 1" class="space-y-4">
+        <FormField v-slot="{ componentField }" name="firstName">
+          <FormItem>
+            <FormLabel>이름</FormLabel>
+            <FormControl>
+              <Input placeholder="이름을 입력하세요" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        
+        <FormField v-slot="{ componentField }" name="lastName">
+          <FormItem>
+            <FormLabel>성</FormLabel>
+            <FormControl>
+              <Input placeholder="성을 입력하세요" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
+
+      <!-- 단계 2: 연락처 -->
+      <div v-if="currentStep === 2" class="space-y-4">
+        <FormField v-slot="{ componentField }" name="email">
+          <FormItem>
+            <FormLabel>이메일</FormLabel>
+            <FormControl>
+              <Input type="email" placeholder="이메일을 입력하세요" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        
+        <FormField v-slot="{ componentField }" name="phone">
+          <FormItem>
+            <FormLabel>전화번호</FormLabel>
+            <FormControl>
+              <Input placeholder="전화번호를 입력하세요" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
+
+      <div class="flex justify-between">
+        <Button 
+          type="button" 
+          variant="outline"
+          @click="prevStep"
+          :disabled="currentStep === 1"
+        >
+          이전
+        </Button>
+        
+        <Button 
+          type="submit"
+          :disabled="isSubmitting"
+        >
+          {{ currentStep === totalSteps ? '완료' : '다음' }}
+        </Button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+
+const currentStep = ref(1)
+const totalSteps = 2
+const isSubmitting = ref(false)
+
+const formSchema = toTypedSchema(z.object({
+  firstName: z.string().min(1, '이름을 입력하세요'),
+  lastName: z.string().min(1, '성을 입력하세요'),
+  email: z.string().email('유효한 이메일을 입력하세요'),
+  phone: z.string().min(10, '유효한 전화번호를 입력하세요'),
+}))
+
+const form = useForm({
+  validationSchema: formSchema,
+})
+
+const nextStep = () => {
+  if (currentStep.value < totalSteps) {
+    currentStep.value++
+  }
+}
+
+const prevStep = () => {
+  if (currentStep.value > 1) {
+    currentStep.value--
+  }
+}
+
+const handleSubmit = form.handleSubmit(async (values) => {
+  if (currentStep.value < totalSteps) {
+    nextStep()
+  } else {
+    isSubmitting.value = true
+    try {
+      // 폼 제출 로직
+      console.log('Form submitted:', values)
+    } finally {
+      isSubmitting.value = false
+    }
+  }
+})
+</script>
+```
+
+## Zod 검증 규칙 예시
+
+```typescript
+const validationSchema = z.object({
+  // 기본 문자열
+  username: z.string().min(2, '최소 2자').max(50, '최대 50자'),
+  
+  // 이메일
+  email: z.string().email('유효한 이메일을 입력하세요'),
+  
+  // 비밀번호
+  password: z.string()
+    .min(8, '최소 8자')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, '대소문자와 숫자를 포함해야 합니다'),
+  
+  // 숫자
+  age: z.number().min(18, '18세 이상').max(100, '100세 이하'),
+  
+  // 선택적 필드
+  middleName: z.string().optional(),
+  
+  // 배열
+  hobbies: z.array(z.string()).min(1, '최소 하나의 취미를 선택하세요'),
+  
+  // 날짜
+  birthDate: z.date().max(new Date(), '미래 날짜는 선택할 수 없습니다'),
+  
+  // 커스텀 검증
+  confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: '비밀번호가 일치하지 않습니다',
+  path: ['confirmPassword'],
+})
+```
+
+## 폼 상태 관리
+
+```vue
+<script setup lang="ts">
+// 폼 상태 확인
+const { errors, isValid, isSubmitting, values } = form
+
+// 특정 필드 값 설정
+form.setFieldValue('username', 'newValue')
+
+// 폼 리셋
+form.resetForm()
+
+// 폼 검증
+const isFormValid = await form.validate()
+
+// 에러 메시지 설정
+form.setFieldError('username', '이미 사용중인 사용자명입니다')
+</script>
+```
+
+## 접근성 고려사항
+
+- 모든 입력 필드는 적절한 `label`을 가져야 합니다
+- 에러 메시지는 `aria-describedby`로 연결됩니다
+- 필수 필드는 `aria-required`가 설정됩니다
+- 포커스 관리가 자동으로 처리됩니다

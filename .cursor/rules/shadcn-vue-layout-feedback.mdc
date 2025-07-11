@@ -1,0 +1,761 @@
+# shadcn-vue Layout & Feedback 컴포넌트 가이드
+
+레이아웃 구성과 사용자 피드백을 위한 컴포넌트들입니다. 사용자 경험을 향상시키는 핵심 요소들을 제공합니다.
+
+## Layout 컴포넌트들
+
+### AspectRatio
+
+특정 비율을 유지하는 컨테이너:
+
+```vue
+<template>
+  <AspectRatio :ratio="16 / 9" class="bg-muted">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
+      alt="이미지"
+      class="rounded-md object-cover"
+    />
+  </AspectRatio>
+</template>
+
+<script setup lang="ts">
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+</script>
+```
+
+### ScrollArea
+
+스크롤 가능한 영역:
+
+```vue
+<template>
+  <ScrollArea class="h-72 w-48 rounded-md border">
+    <div class="p-4">
+      <h4 class="mb-4 text-sm font-medium leading-none">태그</h4>
+      <div v-for="tag in tags" :key="tag" class="text-sm">
+        {{ tag }}
+      </div>
+    </div>
+  </ScrollArea>
+</template>
+
+<script setup lang="ts">
+import { ScrollArea } from '@/components/ui/scroll-area'
+
+const tags = Array.from({ length: 50 }).map(
+  (_, i, a) => `v1.2.0-beta.${a.length - i}`
+)
+</script>
+```
+
+### Resizable
+
+크기 조절 가능한 패널:
+
+```vue
+<template>
+  <ResizablePanelGroup
+    direction="horizontal"
+    class="max-w-md rounded-lg border"
+  >
+    <ResizablePanel :default-size="50">
+      <div class="flex h-[200px] items-center justify-center p-6">
+        <span class="font-semibold">하나</span>
+      </div>
+    </ResizablePanel>
+    <ResizableHandle />
+    <ResizablePanel :default-size="50">
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel :default-size="25">
+          <div class="flex h-full items-center justify-center p-6">
+            <span class="font-semibold">둘</span>
+          </div>
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel :default-size="75">
+          <div class="flex h-full items-center justify-center p-6">
+            <span class="font-semibold">셋</span>
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </ResizablePanel>
+  </ResizablePanelGroup>
+</template>
+
+<script setup lang="ts">
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable'
+</script>
+```
+
+### Separator
+
+구분선:
+
+```vue
+<template>
+  <div>
+    <div class="space-y-1">
+      <h4 class="text-sm font-medium leading-none">Radix Primitives</h4>
+      <p class="text-sm text-muted-foreground">
+        접근 가능한 UI 컴포넌트를 구축하기 위한 오픈 소스 UI 컴포넌트 라이브러리입니다.
+      </p>
+    </div>
+    <Separator class="my-4" />
+    <div class="flex h-5 items-center space-x-4 text-sm">
+      <div>블로그</div>
+      <Separator orientation="vertical" />
+      <div>문서</div>
+      <Separator orientation="vertical" />
+      <div>소스</div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Separator } from '@/components/ui/separator'
+</script>
+```
+
+### Sheet
+
+슬라이드 패널:
+
+```vue
+<template>
+  <Sheet>
+    <SheetTrigger as-child>
+      <Button variant="outline">시트 열기</Button>
+    </SheetTrigger>
+    <SheetContent>
+      <SheetHeader>
+        <SheetTitle>프로필 편집</SheetTitle>
+        <SheetDescription>
+          여기서 프로필을 변경할 수 있습니다. 완료되면 저장을 클릭하세요.
+        </SheetDescription>
+      </SheetHeader>
+      <div class="grid gap-4 py-4">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="name" class="text-right">
+            이름
+          </Label>
+          <Input
+            id="name"
+            value="Pedro Duarte"
+            class="col-span-3"
+          />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="username" class="text-right">
+            사용자명
+          </Label>
+          <Input
+            id="username"
+            value="@peduarte"
+            class="col-span-3"
+          />
+        </div>
+      </div>
+      <SheetFooter>
+        <SheetClose as-child>
+          <Button type="submit">변경사항 저장</Button>
+        </SheetClose>
+      </SheetFooter>
+    </SheetContent>
+  </Sheet>
+</template>
+
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+</script>
+```
+
+### Drawer
+
+모바일 친화적인 드로어:
+
+```vue
+<template>
+  <Drawer>
+    <DrawerTrigger as-child>
+      <Button variant="outline">드로어 열기</Button>
+    </DrawerTrigger>
+    <DrawerContent>
+      <div class="mx-auto w-full max-w-sm">
+        <DrawerHeader>
+          <DrawerTitle>Goal 이동</DrawerTitle>
+          <DrawerDescription>일일 목표를 설정하세요.</DrawerDescription>
+        </DrawerHeader>
+        <div class="p-4 pb-0">
+          <div class="flex items-center justify-center space-x-2">
+            <Button
+              variant="outline"
+              size="icon"
+              class="h-8 w-8 shrink-0 rounded-full"
+              :disabled="goal <= 200"
+              @click="onClick(-10)"
+            >
+              <Minus class="h-4 w-4" />
+              <span class="sr-only">감소</span>
+            </Button>
+            <div class="flex-1 text-center">
+              <div class="text-7xl font-bold tracking-tighter">
+                {{ goal }}
+              </div>
+              <div class="text-[0.70rem] uppercase text-muted-foreground">
+                칼로리/일
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              class="h-8 w-8 shrink-0 rounded-full"
+              :disabled="goal >= 400"
+              @click="onClick(10)"
+            >
+              <Plus class="h-4 w-4" />
+              <span class="sr-only">증가</span>
+            </Button>
+          </div>
+          <div class="mt-3 h-[120px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart :data="data">
+                <Bar
+                  dataKey="goal"
+                  style="fill: hsl(var(--foreground));"
+                  radius="2"
+                  fillOpacity="0.8"
+                  activeBar="false"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <DrawerFooter>
+          <Button>목표 제출</Button>
+          <DrawerClose as-child>
+            <Button variant="outline">취소</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </div>
+    </DrawerContent>
+  </Drawer>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Minus, Plus } from 'lucide-vue-next'
+import { Bar, BarChart, ResponsiveContainer } from 'recharts'
+
+import { Button } from '@/components/ui/button'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+
+const goal = ref(350)
+
+const data = [
+  { goal: 400 },
+  { goal: 300 },
+  { goal: 200 },
+  { goal: 300 },
+  { goal: 200 },
+  { goal: 278 },
+  { goal: 189 },
+  { goal: 239 },
+  { goal: 300 },
+  { goal: 200 },
+  { goal: 278 },
+  { goal: 189 },
+  { goal: 349 },
+]
+
+function onClick(adjustment: number) {
+  goal.value = Math.max(200, Math.min(400, goal.value + adjustment))
+}
+</script>
+```
+
+## Feedback 컴포넌트들
+
+### Alert
+
+중요한 정보를 표시하는 알림:
+
+```vue
+<template>
+  <Alert>
+    <Terminal class="h-4 w-4" />
+    <AlertTitle>주의하세요!</AlertTitle>
+    <AlertDescription>
+      GitHub 계정에 새로운 SSH 키를 추가할 수 있습니다.
+    </AlertDescription>
+  </Alert>
+</template>
+
+<script setup lang="ts">
+import { Terminal } from 'lucide-vue-next'
+
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/components/ui/alert'
+</script>
+```
+
+### AlertDialog
+
+확인이 필요한 중요한 액션:
+
+```vue
+<template>
+  <AlertDialog>
+    <AlertDialogTrigger as-child>
+      <Button variant="outline">계정 삭제</Button>
+    </AlertDialogTrigger>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>정말 확실하신가요?</AlertDialogTitle>
+        <AlertDialogDescription>
+          이 작업은 되돌릴 수 없습니다. 계정이 영구적으로 삭제되고 
+          서버에서 데이터가 제거됩니다.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>취소</AlertDialogCancel>
+        <AlertDialogAction>계속</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+</template>
+
+<script setup lang="ts">
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+</script>
+```
+
+### Dialog
+
+모달 대화상자:
+
+```vue
+<template>
+  <Dialog>
+    <DialogTrigger as-child>
+      <Button variant="outline">프로필 편집</Button>
+    </DialogTrigger>
+    <DialogContent class="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>프로필 편집</DialogTitle>
+        <DialogDescription>
+          여기서 프로필을 변경할 수 있습니다. 완료되면 저장을 클릭하세요.
+        </DialogDescription>
+      </DialogHeader>
+      <div class="grid gap-4 py-4">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="name" class="text-right">
+            이름
+          </Label>
+          <Input
+            id="name"
+            value="Pedro Duarte"
+            class="col-span-3"
+          />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="username" class="text-right">
+            사용자명
+          </Label>
+          <Input
+            id="username"
+            value="@peduarte"
+            class="col-span-3"
+          />
+        </div>
+      </div>
+      <DialogFooter>
+        <Button type="submit">변경사항 저장</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</template>
+
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+</script>
+```
+
+### Toast
+
+임시 알림 메시지:
+
+```vue
+<template>
+  <div>
+    <Button
+      variant="outline"
+      @click="toast({
+        title: '예약됨: 오늘 오후 2시 회의',
+        description: '금요일, 2023년 2월 10일 오후 5:30',
+        action: h(ToastAction, {
+          altText: 'Goto schedule to undo'
+        }, {
+          default: () => '취소'
+        }),
+      })"
+    >
+      토스트 표시
+    </Button>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { h } from 'vue'
+import { Button } from '@/components/ui/button'
+import { ToastAction } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
+</script>
+```
+
+### Progress
+
+진행 상황을 표시하는 바:
+
+```vue
+<template>
+  <div class="w-full">
+    <Progress v-model="progress" class="w-[60%]" />
+    <div class="mt-4 space-x-2">
+      <Button @click="decreaseProgress" variant="outline">감소</Button>
+      <Button @click="increaseProgress" variant="outline">증가</Button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+
+const progress = ref(13)
+
+function increaseProgress() {
+  progress.value = Math.min(100, progress.value + 10)
+}
+
+function decreaseProgress() {
+  progress.value = Math.max(0, progress.value - 10)
+}
+</script>
+```
+
+### Sonner
+
+향상된 토스트 알림:
+
+```vue
+<template>
+  <div class="space-x-2">
+    <Button
+      variant="outline"
+      @click="() => toast('이벤트가 생성되었습니다')"
+    >
+      토스트 표시
+    </Button>
+    <Button
+      variant="outline"
+      @click="() => toast('이벤트가 생성되었습니다', {
+        description: '일요일, 2023년 12월 03일 오후 9:00',
+        action: {
+          label: '취소',
+          onClick: () => console.log('취소'),
+        },
+      })"
+    >
+      설명이 있는 토스트
+    </Button>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { toast } from 'vue-sonner'
+</script>
+```
+
+## 반응형 Dialog/Drawer 패턴
+
+데스크톱에서는 Dialog, 모바일에서는 Drawer로 표시하는 반응형 패턴:
+
+```vue
+<template>
+  <div>
+    <div class="hidden md:block">
+      <Dialog>
+        <DialogTrigger as-child>
+          <Button variant="outline">프로필 편집</Button>
+        </DialogTrigger>
+        <DialogContent class="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>프로필 편집</DialogTitle>
+            <DialogDescription>
+              여기서 프로필을 변경할 수 있습니다. 완료되면 저장을 클릭하세요.
+            </DialogDescription>
+          </DialogHeader>
+          <ProfileForm />
+        </DialogContent>
+      </Dialog>
+    </div>
+    
+    <div class="md:hidden">
+      <Drawer>
+        <DrawerTrigger as-child>
+          <Button variant="outline">프로필 편집</Button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader class="text-left">
+            <DrawerTitle>프로필 편집</DrawerTitle>
+            <DrawerDescription>
+              여기서 프로필을 변경할 수 있습니다. 완료되면 저장을 클릭하세요.
+            </DrawerDescription>
+          </DrawerHeader>
+          <ProfileForm class="px-4" />
+          <DrawerFooter class="pt-2">
+            <DrawerClose as-child>
+              <Button variant="outline">취소</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import ProfileForm from './ProfileForm.vue'
+</script>
+```
+
+## 컴포저블 패턴
+
+### useToast 컴포저블
+
+```vue
+<script setup lang="ts">
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
+
+// 기본 토스트
+function showBasicToast() {
+  toast({
+    title: '성공',
+    description: '작업이 완료되었습니다.',
+  })
+}
+
+// 오류 토스트
+function showErrorToast() {
+  toast({
+    variant: 'destructive',
+    title: '오류',
+    description: '문제가 발생했습니다.',
+  })
+}
+
+// 액션이 있는 토스트
+function showActionToast() {
+  toast({
+    title: '업데이트 가능',
+    description: '새 버전이 있습니다.',
+    action: h(ToastAction, {
+      altText: '업데이트하기',
+      onClick: () => console.log('업데이트 시작')
+    }, {
+      default: () => '업데이트'
+    }),
+  })
+}
+</script>
+```
+
+### useDialog 컴포저블
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const dialogOpen = ref(false)
+
+function openDialog() {
+  dialogOpen.value = true
+}
+
+function closeDialog() {
+  dialogOpen.value = false
+}
+
+function handleSubmit() {
+  // 처리 로직
+  closeDialog()
+}
+</script>
+
+<template>
+  <Dialog v-model:open="dialogOpen">
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>확인</DialogTitle>
+      </DialogHeader>
+      <p>정말 진행하시겠습니까?</p>
+      <DialogFooter>
+        <Button @click="closeDialog" variant="outline">취소</Button>
+        <Button @click="handleSubmit">확인</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</template>
+```
+
+## 고급 패턴
+
+### 중첩 Dialog 방지
+
+```vue
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+
+const parentDialogOpen = ref(false)
+const childDialogOpen = ref(false)
+
+// 부모 Dialog가 닫히면 자식 Dialog도 닫기
+watch(parentDialogOpen, (open) => {
+  if (!open) {
+    childDialogOpen.value = false
+  }
+})
+</script>
+```
+
+### 진행 상황 추적
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const progress = ref(0)
+const isLoading = ref(false)
+
+async function processData() {
+  isLoading.value = true
+  progress.value = 0
+  
+  try {
+    // 단계별 진행
+    for (let i = 0; i <= 100; i += 10) {
+      progress.value = i
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+    
+    toast({
+      title: '완료',
+      description: '데이터 처리가 완료되었습니다.',
+    })
+  } catch (error) {
+    toast({
+      variant: 'destructive',
+      title: '오류',
+      description: '처리 중 오류가 발생했습니다.',
+    })
+  } finally {
+    isLoading.value = false
+  }
+}
+</script>
+
+<template>
+  <div class="space-y-4">
+    <Button @click="processData" :disabled="isLoading">
+      {{ isLoading ? '처리 중...' : '데이터 처리' }}
+    </Button>
+    
+    <Progress v-if="isLoading" v-model="progress" class="w-full" />
+  </div>
+</template>
+```
+
+## 접근성 고려사항
+
+- Dialog와 Drawer는 포커스 트랩을 구현합니다
+- ESC 키로 모달을 닫을 수 있습니다
+- AlertDialog는 취소와 확인 버튼을 명확히 구분합니다
+- Toast는 스크린 리더에게 적절히 발표됩니다
+- Progress는 진행 상황을 정확히 전달합니다
+- 모든 인터랙티브 요소는 키보드로 접근 가능합니다

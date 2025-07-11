@@ -1,0 +1,193 @@
+# shadcn-vue 기본 가이드
+
+shadcn-vue는 Vue 3를 위한 UI 컴포넌트 라이브러리입니다. 아름답고 접근 가능한 컴포넌트들을 복사하여 프로젝트에 붙여넣기만 하면 됩니다.
+
+## 설치 방법
+
+### 1. 프로젝트 초기화
+```bash
+# shadcn-vue CLI로 초기화
+pnpm dlx shadcn-vue@latest init
+
+# 또는 npm/yarn/bun 사용
+npm dlx shadcn-vue@latest init
+yarn dlx shadcn-vue@latest init
+bun dlx shadcn-vue@latest init
+```
+
+### 2. 컴포넌트 추가
+```bash
+# 개별 컴포넌트 추가
+pnpm dlx shadcn-vue@latest add button
+pnpm dlx shadcn-vue@latest add card
+pnpm dlx shadcn-vue@latest add input
+
+# 여러 컴포넌트 한 번에 추가
+pnpm dlx shadcn-vue@latest add button card input form
+
+# 모든 컴포넌트 추가
+pnpm dlx shadcn-vue@latest add --all
+```
+
+## 프로젝트 구조 예시
+
+```
+src/
+├── components/
+│   └── ui/
+│       ├── button.vue
+│       ├── card.vue
+│       ├── input.vue
+│       └── form.vue
+├── lib/
+│   └── utils.ts
+└── assets/
+    └── globals.css
+```
+
+## 핵심 원칙
+
+1. **TypeScript 사용**: 모든 컴포넌트는 TypeScript로 작성되어야 합니다.
+2. **Tailwind CSS**: 스타일링은 Tailwind CSS를 기반으로 합니다.
+3. **Radix Vue**: 접근성을 위해 Radix Vue를 사용합니다.
+4. **CSS Variables**: 색상과 테마는 CSS 변수로 관리합니다.
+5. **Composition API**: Vue 3의 Composition API를 사용합니다.
+
+## 기본 Import 패턴
+
+```vue
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+</script>
+```
+
+## 유틸리티 함수
+
+```typescript
+// lib/utils.ts
+import { type ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+## 기본 테마 설정
+
+```css
+/* globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+```
+
+## 필수 의존성
+
+```json
+{
+  "dependencies": {
+    "vue": "^3.3.0",
+    "@radix-ui/vue": "^1.0.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^1.14.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.0.0",
+    "vite": "^4.0.0"
+  }
+}
+```
+
+## 기본 사용 예시
+
+```vue
+<template>
+  <div class="container mx-auto p-4">
+    <Card class="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>환영합니다</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p class="text-sm text-muted-foreground">
+          shadcn-vue를 사용해보세요.
+        </p>
+      </CardContent>
+    </Card>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+</script>
+```
+
+## 참고 사항
+
+- 모든 컴포넌트는 접근성을 고려하여 제작되었습니다.
+- 다크 모드를 지원합니다.
+- 반응형 디자인을 기본으로 합니다.
+- 컴포넌트는 자유롭게 커스터마이징할 수 있습니다.

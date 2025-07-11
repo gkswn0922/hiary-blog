@@ -1,0 +1,688 @@
+# shadcn-vue Data Display 컴포넌트 가이드
+
+데이터를 표시하고 시각화하기 위한 컴포넌트들입니다. 사용자에게 정보를 효과적으로 전달할 수 있습니다.
+
+## 기본 Display 컴포넌트들
+
+### Table
+
+기본적인 테이블 컴포넌트입니다:
+
+```vue
+<template>
+  <Table>
+    <TableCaption>최근 결제 내역입니다.</TableCaption>
+    <TableHeader>
+      <TableRow>
+        <TableHead class="w-[100px]">송장번호</TableHead>
+        <TableHead>상태</TableHead>
+        <TableHead>결제방법</TableHead>
+        <TableHead class="text-right">금액</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      <TableRow>
+        <TableCell class="font-medium">INV001</TableCell>
+        <TableCell>결제완료</TableCell>
+        <TableCell>신용카드</TableCell>
+        <TableCell class="text-right">₩250,000</TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell class="font-medium">INV002</TableCell>
+        <TableCell>대기중</TableCell>
+        <TableCell>PayPal</TableCell>
+        <TableCell class="text-right">₩150,000</TableCell>
+      </TableRow>
+    </TableBody>
+  </Table>
+</template>
+
+<script setup lang="ts">
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+</script>
+```
+
+### DataTable (고급 테이블)
+
+TanStack Table을 기반으로 한 고급 데이터 테이블:
+
+```vue
+<template>
+  <div class="w-full">
+    <div class="flex items-center py-4">
+      <Input
+        placeholder="이메일로 필터링..."
+        :model-value="table.getColumn('email')?.getFilterValue() as string"
+        @update:model-value="table.getColumn('email')?.setFilterValue($event)"
+        class="max-w-sm"
+      />
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="outline" class="ml-auto">
+            컬럼 <ChevronDown class="ml-2 h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuCheckboxItem
+            v-for="column in table.getAllColumns().filter((column) => column.getCanHide())"
+            :key="column.id"
+            class="capitalize"
+            :checked="column.getIsVisible()"
+            @update:checked="(value) => column.toggleVisibility(!!value)"
+          >
+            {{ column.id }}
+          </DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+    <div class="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+            <TableHead v-for="header in headerGroup.headers" :key="header.id">
+              <FlexRender
+                v-if="!header.isPlaceholder"
+                :render="header.column.columnDef.header"
+                :props="header.getContext()"
+              />
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <template v-if="table.getRowModel().rows?.length">
+            <TableRow
+              v-for="row in table.getRowModel().rows"
+              :key="row.id"
+              :data-state="row.getIsSelected() && 'selected'"
+            >
+              <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+              </TableCell>
+            </TableRow>
+          </template>
+          <TableRow v-else>
+            <TableCell :colspan="columns.length" class="h-24 text-center">
+              결과가 없습니다.
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
+    <div class="flex items-center justify-end space-x-2 py-4">
+      <div class="flex-1 text-sm text-muted-foreground">
+        {{ table.getFilteredSelectedRowModel().rows.length }}개 중 
+        {{ table.getFilteredRowModel().rows.length }}개 선택됨
+      </div>
+      <div class="space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          :disabled="!table.getCanPreviousPage()"
+          @click="table.previousPage()"
+        >
+          이전
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          :disabled="!table.getCanNextPage()"
+          @click="table.nextPage()"
+        >
+          다음
+        </Button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts" generic="TData, TValue">
+import type { ColumnDef } from '@tanstack/vue-table'
+import {
+  FlexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useVueTable,
+} from '@tanstack/vue-table'
+
+const props = defineProps<{
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+}>()
+
+const sorting = ref([])
+const columnFilters = ref([])
+const columnVisibility = ref({})
+const rowSelection = ref({})
+
+const table = useVueTable({
+  get data() { return props.data },
+  get columns() { return props.columns },
+  onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+  onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
+  onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
+  onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
+  getCoreRowModel: getCoreRowModel(),
+  getPaginationRowModel: getPaginationRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  state: {
+    get sorting() { return sorting.value },
+    get columnFilters() { return columnFilters.value },
+    get columnVisibility() { return columnVisibility.value },
+    get rowSelection() { return rowSelection.value },
+  },
+})
+</script>
+```
+
+### Card
+
+정보를 그룹화하여 표시하는 컨테이너:
+
+```vue
+<template>
+  <Card class="w-[350px]">
+    <CardHeader>
+      <CardTitle>알림</CardTitle>
+      <CardDescription>읽지 않은 메시지가 3개 있습니다.</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <div class="flex items-center space-x-4 rounded-md border p-4">
+        <BellRing />
+        <div class="flex-1 space-y-1">
+          <p class="text-sm font-medium leading-none">
+            푸시 알림
+          </p>
+          <p class="text-sm text-muted-foreground">
+            디바이스로 알림을 보냅니다.
+          </p>
+        </div>
+        <Switch />
+      </div>
+      <div>
+        <div
+          v-for="(notification, index) in notifications"
+          :key="index"
+          class="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0"
+        >
+          <span class="flex h-2 w-2 translate-y-1 rounded-full bg-sky-500" />
+          <div class="space-y-1">
+            <p class="text-sm font-medium leading-none">
+              {{ notification.title }}
+            </p>
+            <p class="text-sm text-muted-foreground">
+              {{ notification.description }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </CardContent>
+    <CardFooter>
+      <Button class="w-full">
+        <Check class="mr-2 h-4 w-4" /> 모두 읽음으로 표시
+      </Button>
+    </CardFooter>
+  </Card>
+</template>
+
+<script setup lang="ts">
+import { BellRing, Check } from 'lucide-vue-next'
+
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Switch } from '@/components/ui/switch'
+
+const notifications = [
+  {
+    title: "전화가 확인되었습니다.",
+    description: "1시간 전",
+  },
+  {
+    title: "새 메시지가 있습니다!",
+    description: "1시간 전",
+  },
+  {
+    title: "구독이 곧 만료됩니다!",
+    description: "2시간 전",
+  },
+]
+</script>
+```
+
+### Badge
+
+상태나 범주를 나타내는 작은 라벨:
+
+```vue
+<template>
+  <div class="flex items-center space-x-2">
+    <Badge>기본</Badge>
+    <Badge variant="secondary">보조</Badge>
+    <Badge variant="destructive">삭제</Badge>
+    <Badge variant="outline">외곽선</Badge>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Badge } from '@/components/ui/badge'
+</script>
+```
+
+### Avatar
+
+사용자 프로필 이미지나 이니셜을 표시:
+
+```vue
+<template>
+  <div class="flex items-center space-x-2">
+    <Avatar>
+      <AvatarImage src="https://github.com/radix-vue.png" alt="@radix-vue" />
+      <AvatarFallback>RV</AvatarFallback>
+    </Avatar>
+    <Avatar>
+      <AvatarImage src="https://github.com/vuejs.png" alt="@vuejs" />
+      <AvatarFallback>VJ</AvatarFallback>
+    </Avatar>
+    <Avatar>
+      <AvatarFallback>CN</AvatarFallback>
+    </Avatar>
+  </div>
+</template>
+
+<script setup lang="ts">
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/ui/avatar'
+</script>
+```
+
+### Skeleton
+
+로딩 상태를 표시하는 플레이스홀더:
+
+```vue
+<template>
+  <div class="flex items-center space-x-4">
+    <Skeleton class="h-12 w-12 rounded-full" />
+    <div class="space-y-2">
+      <Skeleton class="h-4 w-[250px]" />
+      <Skeleton class="h-4 w-[200px]" />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Skeleton } from '@/components/ui/skeleton'
+</script>
+```
+
+## Interactive Display 컴포넌트들
+
+### Accordion
+
+접을 수 있는 콘텐츠 섹션:
+
+```vue
+<template>
+  <Accordion type="single" collapsible class="w-full">
+    <AccordionItem value="item-1">
+      <AccordionTrigger>접근 가능합니까?</AccordionTrigger>
+      <AccordionContent>
+        네, WAI-ARIA 디자인 패턴을 준수합니다.
+      </AccordionContent>
+    </AccordionItem>
+    <AccordionItem value="item-2">
+      <AccordionTrigger>스타일링이 가능합니까?</AccordionTrigger>
+      <AccordionContent>
+        네, CSS 클래스 또는 사용자 정의 속성을 통해 애니메이션을 포함한 모든 부분을 스타일링할 수 있습니다.
+      </AccordionContent>
+    </AccordionItem>
+    <AccordionItem value="item-3">
+      <AccordionTrigger>애니메이션이 적용됩니까?</AccordionTrigger>
+      <AccordionContent>
+        네, 기본적으로 애니메이션이 적용되어 있지만 원하는 경우 비활성화할 수 있습니다.
+      </AccordionContent>
+    </AccordionItem>
+  </Accordion>
+</template>
+
+<script setup lang="ts">
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+</script>
+```
+
+### Collapsible
+
+접을 수 있는 콘텐츠 컨테이너:
+
+```vue
+<template>
+  <Collapsible v-model:open="isOpen" class="w-[350px] space-y-2">
+    <div class="flex items-center justify-between space-x-4 px-4">
+      <h4 class="text-sm font-semibold">
+        @peduarte가 3개의 리포지토리를 즐겨찾기했습니다
+      </h4>
+      <CollapsibleTrigger as-child>
+        <Button variant="ghost" size="sm" class="w-9 p-0">
+          <ChevronsUpDown class="h-4 w-4" />
+          <span class="sr-only">토글</span>
+        </Button>
+      </CollapsibleTrigger>
+    </div>
+    <div class="rounded-md border px-4 py-3 font-mono text-sm">
+      @radix-ui/primitives
+    </div>
+    <CollapsibleContent class="space-y-2">
+      <div class="rounded-md border px-4 py-3 font-mono text-sm">
+        @radix-ui/colors
+      </div>
+      <div class="rounded-md border px-4 py-3 font-mono text-sm">
+        @stitches/react
+      </div>
+    </CollapsibleContent>
+  </Collapsible>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ChevronsUpDown } from 'lucide-vue-next'
+
+import { Button } from '@/components/ui/button'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
+
+const isOpen = ref(false)
+</script>
+```
+
+### HoverCard
+
+호버 시 표시되는 풍부한 미리보기:
+
+```vue
+<template>
+  <HoverCard>
+    <HoverCardTrigger as-child>
+      <Button variant="link">@nextjs</Button>
+    </HoverCardTrigger>
+    <HoverCardContent class="w-80">
+      <div class="flex justify-between space-x-4">
+        <Avatar>
+          <AvatarImage src="https://github.com/vercel.png" />
+          <AvatarFallback>VC</AvatarFallback>
+        </Avatar>
+        <div class="space-y-1">
+          <h4 class="text-sm font-semibold">@nextjs</h4>
+          <p class="text-sm">
+            React 프레임워크 – Vercel에서 제작
+          </p>
+          <div class="flex items-center pt-2">
+            <CalendarDays class="mr-2 h-4 w-4 opacity-70" />
+            <span class="text-xs text-muted-foreground">
+              2021년 12월부터 가입
+            </span>
+          </div>
+        </div>
+      </div>
+    </HoverCardContent>
+  </HoverCard>
+</template>
+
+<script setup lang="ts">
+import { CalendarDays } from 'lucide-vue-next'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card'
+</script>
+```
+
+### Tooltip
+
+요소에 대한 간단한 설명:
+
+```vue
+<template>
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger as-child>
+        <Button variant="outline">호버하세요</Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>라이브러리에 추가</p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+</template>
+
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+</script>
+```
+
+### Popover
+
+클릭 시 표시되는 부동 콘텐츠:
+
+```vue
+<template>
+  <Popover>
+    <PopoverTrigger as-child>
+      <Button variant="outline">팝오버 열기</Button>
+    </PopoverTrigger>
+    <PopoverContent class="w-80">
+      <div class="grid gap-4">
+        <div class="space-y-2">
+          <h4 class="font-medium leading-none">크기</h4>
+          <p class="text-sm text-muted-foreground">
+            팝오버의 크기를 설정하세요.
+          </p>
+        </div>
+        <div class="grid gap-2">
+          <div class="grid grid-cols-3 items-center gap-4">
+            <Label for="width">너비</Label>
+            <Input
+              id="width"
+              default-value="100%"
+              class="col-span-2 h-8"
+            />
+          </div>
+          <div class="grid grid-cols-3 items-center gap-4">
+            <Label for="maxWidth">최대 너비</Label>
+            <Input
+              id="maxWidth"
+              default-value="300px"
+              class="col-span-2 h-8"
+            />
+          </div>
+          <div class="grid grid-cols-3 items-center gap-4">
+            <Label for="height">높이</Label>
+            <Input
+              id="height"
+              default-value="25px"
+              class="col-span-2 h-8"
+            />
+          </div>
+          <div class="grid grid-cols-3 items-center gap-4">
+            <Label for="maxHeight">최대 높이</Label>
+            <Input
+              id="maxHeight"
+              default-value="none"
+              class="col-span-2 h-8"
+            />
+          </div>
+        </div>
+      </div>
+    </PopoverContent>
+  </Popover>
+</template>
+
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+</script>
+```
+
+## 고급 패턴
+
+### 반응형 DataTable
+
+```vue
+<template>
+  <div class="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
+    <div class="flex items-center justify-between space-y-2">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight">환영합니다!</h2>
+        <p class="text-muted-foreground">
+          작업 목록이 여기 있습니다.
+        </p>
+      </div>
+      <div class="flex items-center space-x-2">
+        <UserNav />
+      </div>
+    </div>
+    <DataTable :data="tasks" :columns="columns" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { h } from 'vue'
+import type { ColumnDef } from '@tanstack/vue-table'
+
+import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+
+import { DataTableColumnHeader } from './data-table-column-header.vue'
+import { DataTableRowActions } from './data-table-row-actions.vue'
+
+import { labels, priorities, statuses } from '../data/data'
+import type { Task } from '../data/schema'
+
+export const columns: ColumnDef<Task>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => h(Checkbox, {
+      'checked': table.getIsAllPageRowsSelected(),
+      'onUpdate:checked': (value: boolean) => table.toggleAllPageRowsSelected(!!value),
+      'ariaLabel': '모두 선택',
+    }),
+    cell: ({ row }) => h(Checkbox, {
+      'checked': row.getIsSelected(),
+      'onUpdate:checked': (value: boolean) => row.toggleSelected(!!value),
+      'ariaLabel': '행 선택',
+    }),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'id',
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Task' }),
+    cell: ({ row }) => h('div', { class: 'w-[80px]' }, row.getValue('id')),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'title',
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Title' }),
+    cell: ({ row }) => {
+      const label = labels.find(label => label.value === row.original.label)
+
+      return h('div', { class: 'flex space-x-2' }, [
+        label ? h(Badge, { variant: 'outline' }, label.label) : null,
+        h('span', { class: 'max-w-[500px] truncate font-medium' }, row.getValue('title')),
+      ])
+    },
+  },
+  {
+    accessorKey: 'status',
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Status' }),
+    cell: ({ row }) => {
+      const status = statuses.find(status => status.value === row.getValue('status'))
+
+      if (!status) return null
+
+      return h('div', { class: 'flex w-[100px] items-center' }, [
+        status.icon && h(status.icon, { class: 'mr-2 h-4 w-4 text-muted-foreground' }),
+        h('span', status.label),
+      ])
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+  },
+  {
+    accessorKey: 'priority',
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Priority' }),
+    cell: ({ row }) => {
+      const priority = priorities.find(priority => priority.value === row.getValue('priority'))
+
+      if (!priority) return null
+
+      return h('div', { class: 'flex items-center' }, [
+        priority.icon && h(priority.icon, { class: 'mr-2 h-4 w-4 text-muted-foreground' }),
+        h('span', priority.label),
+      ])
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => h(DataTableRowActions, { row }),
+  },
+]
+</script>
+```
+
+## 접근성 및 성능 고려사항
+
+- 모든 컴포넌트는 키보드 내비게이션을 지원합니다
+- 스크린 리더를 위한 적절한 ARIA 속성이 설정됩니다
+- 큰 데이터셋의 경우 가상화를 고려하세요
+- 이미지는 적절한 alt 텍스트를 제공해야 합니다
+- Skeleton은 실제 콘텐츠와 비슷한 구조를 가져야 합니다

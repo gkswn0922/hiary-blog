@@ -1,0 +1,901 @@
+# shadcn-vue Navigation 컴포넌트 가이드
+
+Navigation 관련 컴포넌트들로 사용자 친화적인 내비게이션 시스템을 구축할 수 있습니다.
+
+## Navigation Menu
+
+### 기본 NavigationMenu
+
+```vue
+<template>
+  <NavigationMenu>
+    <NavigationMenuList>
+      <NavigationMenuItem>
+        <NavigationMenuTrigger>시작하기</NavigationMenuTrigger>
+        <NavigationMenuContent>
+          <ul class="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+            <li class="row-span-3">
+              <NavigationMenuLink as-child>
+                <a
+                  class="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                  href="/"
+                >
+                  <div class="mb-2 mt-4 text-lg font-medium">
+                    shadcn-vue
+                  </div>
+                  <p class="text-sm leading-tight text-muted-foreground">
+                    아름답게 디자인된 컴포넌트들을 복사하여 붙여넣기하세요.
+                  </p>
+                </a>
+              </NavigationMenuLink>
+            </li>
+            <ListItem href="/docs" title="소개">
+              Re-usable 컴포넌트들로 구축되었습니다.
+            </ListItem>
+            <ListItem href="/docs/installation" title="설치">
+              프로젝트에 설치하는 방법입니다.
+            </ListItem>
+            <ListItem href="/docs/primitives/typography" title="Typography">
+              스타일과 컴포넌트들로 텍스트를 아름답게 만드세요.
+            </ListItem>
+          </ul>
+        </NavigationMenuContent>
+      </NavigationMenuItem>
+
+      <NavigationMenuItem>
+        <NavigationMenuTrigger>컴포넌트</NavigationMenuTrigger>
+        <NavigationMenuContent>
+          <ul class="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+            <ListItem title="Alert Dialog" href="/docs/primitives/alert-dialog">
+              모달 대화상자로 사용자의 주의를 끕니다.
+            </ListItem>
+            <ListItem title="Hover Card" href="/docs/primitives/hover-card">
+              사용자가 링크를 호버할 때 미리보기를 보여줍니다.
+            </ListItem>
+            <ListItem title="Progress" href="/docs/primitives/progress">
+              작업의 완료 진행률을 표시합니다.
+            </ListItem>
+            <ListItem title="Scroll-area" href="/docs/primitives/scroll-area">
+              스크롤 가능한 영역을 위한 컨테이너입니다.
+            </ListItem>
+            <ListItem title="Tabs" href="/docs/primitives/tabs">
+              관련된 콘텐츠들을 계층적으로 구성된 탭으로 나눕니다.
+            </ListItem>
+            <ListItem title="Tooltip" href="/docs/primitives/tooltip">
+              요소 위에 호버했을 때 팝업됩니다.
+            </ListItem>
+          </ul>
+        </NavigationMenuContent>
+      </NavigationMenuItem>
+
+      <NavigationMenuItem>
+        <NavigationMenuLink
+          href="/docs"
+          :class="navigationMenuTriggerStyle()"
+        >
+          문서
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+    </NavigationMenuList>
+  </NavigationMenu>
+</template>
+
+<script setup lang="ts">
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu'
+
+interface ListItemProps {
+  title: string
+  href: string
+}
+
+const ListItem = ({ title, href, ...props }: ListItemProps) => {
+  return (
+    <li>
+      <NavigationMenuLink as-child>
+        <a
+          :href="href"
+          class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+        >
+          <div class="text-sm font-medium leading-none">{{ title }}</div>
+          <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            <slot />
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  )
+}
+</script>
+```
+
+## Breadcrumb
+
+### 기본 Breadcrumb
+
+```vue
+<template>
+  <Breadcrumb>
+    <BreadcrumbList>
+      <BreadcrumbItem>
+        <BreadcrumbLink href="/">홈</BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbLink href="/components">컴포넌트</BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+      </BreadcrumbItem>
+    </BreadcrumbList>
+  </Breadcrumb>
+</template>
+
+<script setup lang="ts">
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+</script>
+```
+
+### 드롭다운이 있는 Breadcrumb
+
+```vue
+<template>
+  <Breadcrumb>
+    <BreadcrumbList>
+      <BreadcrumbItem>
+        <BreadcrumbLink href="/">홈</BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger class="flex items-center gap-1">
+            컴포넌트
+            <ChevronDown class="h-4 w-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem>
+              <BreadcrumbLink href="/docs/primitives/accordion">Accordion</BreadcrumbLink>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <BreadcrumbLink href="/docs/primitives/alert-dialog">Alert Dialog</BreadcrumbLink>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <BreadcrumbLink href="/docs/primitives/button">Button</BreadcrumbLink>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+      </BreadcrumbItem>
+    </BreadcrumbList>
+  </Breadcrumb>
+</template>
+
+<script setup lang="ts">
+import { ChevronDown } from 'lucide-vue-next'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+</script>
+```
+
+## Dropdown Menu
+
+### 기본 DropdownMenu
+
+```vue
+<template>
+  <DropdownMenu>
+    <DropdownMenuTrigger as-child>
+      <Button variant="outline">메뉴 열기</Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent class="w-56">
+      <DropdownMenuLabel>내 계정</DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        <DropdownMenuItem>
+          <User class="mr-2 h-4 w-4" />
+          <span>프로필</span>
+          <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <CreditCard class="mr-2 h-4 w-4" />
+          <span>결제</span>
+          <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Settings class="mr-2 h-4 w-4" />
+          <span>설정</span>
+          <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Keyboard class="mr-2 h-4 w-4" />
+          <span>키보드 단축키</span>
+          <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        <DropdownMenuItem>
+          <Users class="mr-2 h-4 w-4" />
+          <span>팀</span>
+        </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <UserPlus class="mr-2 h-4 w-4" />
+            <span>사용자 초대</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem>
+                <Mail class="mr-2 h-4 w-4" />
+                <span>이메일</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <MessageSquare class="mr-2 h-4 w-4" />
+                <span>메시지</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <PlusCircle class="mr-2 h-4 w-4" />
+                <span>더보기...</span>
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+        <DropdownMenuItem>
+          <Plus class="mr-2 h-4 w-4" />
+          <span>새 팀</span>
+          <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem>
+        <Github class="mr-2 h-4 w-4" />
+        <span>GitHub</span>
+      </DropdownMenuItem>
+      <DropdownMenuItem>
+        <LifeBuoy class="mr-2 h-4 w-4" />
+        <span>지원</span>
+      </DropdownMenuItem>
+      <DropdownMenuItem disabled>
+        <Cloud class="mr-2 h-4 w-4" />
+        <span>API</span>
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem>
+        <LogOut class="mr-2 h-4 w-4" />
+        <span>로그아웃</span>
+        <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</template>
+
+<script setup lang="ts">
+import {
+  Cloud,
+  CreditCard,
+  Github,
+  Keyboard,
+  LifeBuoy,
+  LogOut,
+  Mail,
+  MessageSquare,
+  Plus,
+  PlusCircle,
+  Settings,
+  User,
+  UserPlus,
+  Users,
+} from 'lucide-vue-next'
+
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+</script>
+```
+
+### 체크박스가 있는 DropdownMenu
+
+```vue
+<template>
+  <DropdownMenu>
+    <DropdownMenuTrigger as-child>
+      <Button variant="outline">설정</Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent class="w-56">
+      <DropdownMenuLabel>화면 설정</DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuCheckboxItem
+        v-model:checked="showStatusBar"
+      >
+        상태 표시줄
+      </DropdownMenuCheckboxItem>
+      <DropdownMenuCheckboxItem
+        v-model:checked="showActivityBar"
+        disabled
+      >
+        활동 표시줄
+      </DropdownMenuCheckboxItem>
+      <DropdownMenuCheckboxItem
+        v-model:checked="showPanel"
+      >
+        패널
+      </DropdownMenuCheckboxItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
+const showStatusBar = ref(true)
+const showActivityBar = ref(false)
+const showPanel = ref(false)
+</script>
+```
+
+## Context Menu
+
+```vue
+<template>
+  <ContextMenu>
+    <ContextMenuTrigger class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
+      우클릭하세요
+    </ContextMenuTrigger>
+    <ContextMenuContent class="w-64">
+      <ContextMenuItem inset>
+        뒤로가기
+        <ContextMenuShortcut>⌘[</ContextMenuShortcut>
+      </ContextMenuItem>
+      <ContextMenuItem inset disabled>
+        앞으로가기
+        <ContextMenuShortcut>⌘]</ContextMenuShortcut>
+      </ContextMenuItem>
+      <ContextMenuItem inset>
+        다시로드
+        <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+      </ContextMenuItem>
+      <ContextMenuSub>
+        <ContextMenuSubTrigger inset>더보기</ContextMenuSubTrigger>
+        <ContextMenuSubContent class="w-48">
+          <ContextMenuItem>
+            개발자 도구
+            <ContextMenuShortcut>⌘⇧C</ContextMenuShortcut>
+          </ContextMenuItem>
+          <ContextMenuItem>
+            고급 도구
+            <ContextMenuShortcut>⌘⇧I</ContextMenuShortcut>
+          </ContextMenuItem>
+          <ContextMenuSeparator />
+          <ContextMenuItem>작업 관리자</ContextMenuItem>
+        </ContextMenuSubContent>
+      </ContextMenuSub>
+      <ContextMenuSeparator />
+      <ContextMenuCheckboxItem checked>
+        주소 표시줄 보기
+        <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
+      </ContextMenuCheckboxItem>
+      <ContextMenuCheckboxItem>즐겨찾기 표시줄 보기</ContextMenuCheckboxItem>
+      <ContextMenuCheckboxItem>전체 화면 보기</ContextMenuCheckboxItem>
+      <ContextMenuSeparator />
+      <ContextMenuRadioGroup value="pedro">
+        <ContextMenuLabel inset>사용자</ContextMenuLabel>
+        <ContextMenuSeparator />
+        <ContextMenuRadioItem value="pedro">
+          Pedro Duarte
+        </ContextMenuRadioItem>
+        <ContextMenuRadioItem value="colm">
+          Colm Tuite
+        </ContextMenuRadioItem>
+      </ContextMenuRadioGroup>
+    </ContextMenuContent>
+  </ContextMenu>
+</template>
+
+<script setup lang="ts">
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
+</script>
+```
+
+## Command
+
+### 기본 Command (팔레트)
+
+```vue
+<template>
+  <Command>
+    <CommandInput placeholder="명령어나 검색어를 입력하세요..." />
+    <CommandList>
+      <CommandEmpty>결과가 없습니다.</CommandEmpty>
+      <CommandGroup heading="제안">
+        <CommandItem value="calendar">
+          <Calendar class="mr-2 h-4 w-4" />
+          <span>캘린더</span>
+        </CommandItem>
+        <CommandItem value="search-emoji">
+          <Smile class="mr-2 h-4 w-4" />
+          <span>이모지 검색</span>
+        </CommandItem>
+        <CommandItem value="calculator">
+          <Calculator class="mr-2 h-4 w-4" />
+          <span>계산기</span>
+        </CommandItem>
+      </CommandGroup>
+      <CommandSeparator />
+      <CommandGroup heading="설정">
+        <CommandItem value="profile">
+          <User class="mr-2 h-4 w-4" />
+          <span>프로필</span>
+          <CommandShortcut>⌘P</CommandShortcut>
+        </CommandItem>
+        <CommandItem value="billing">
+          <CreditCard class="mr-2 h-4 w-4" />
+          <span>결제</span>
+          <CommandShortcut>⌘B</CommandShortcut>
+        </CommandItem>
+        <CommandItem value="settings">
+          <Settings class="mr-2 h-4 w-4" />
+          <span>설정</span>
+          <CommandShortcut>⌘S</CommandShortcut>
+        </CommandItem>
+      </CommandGroup>
+    </CommandList>
+  </Command>
+</template>
+
+<script setup lang="ts">
+import {
+  Calculator,
+  Calendar,
+  CreditCard,
+  Settings,
+  Smile,
+  User,
+} from 'lucide-vue-next'
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from '@/components/ui/command'
+</script>
+```
+
+### Command Dialog (키보드 단축키)
+
+```vue
+<template>
+  <div>
+    <p class="text-sm text-muted-foreground">
+      <kbd class="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+        <span class="text-xs">⌘</span>J
+      </kbd>
+      를 눌러 명령 메뉴를 여세요
+    </p>
+    
+    <CommandDialog :open="open" @update:open="setOpen">
+      <CommandInput placeholder="명령어나 검색어를 입력하세요..." />
+      <CommandList>
+        <CommandEmpty>결과가 없습니다.</CommandEmpty>
+        <CommandGroup heading="제안">
+          <CommandItem @select="() => runCommand(() => setOpen(false))">
+            <Calendar class="mr-2 h-4 w-4" />
+            캘린더
+          </CommandItem>
+          <CommandItem @select="() => runCommand(() => setOpen(false))">
+            <Smile class="mr-2 h-4 w-4" />
+            이모지 검색
+          </CommandItem>
+          <CommandItem @select="() => runCommand(() => setOpen(false))">
+            <Calculator class="mr-2 h-4 w-4" />
+            계산기
+          </CommandItem>
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading="설정">
+          <CommandItem @select="() => runCommand(() => setOpen(false))">
+            <User class="mr-2 h-4 w-4" />
+            프로필
+            <CommandShortcut>⌘P</CommandShortcut>
+          </CommandItem>
+          <CommandItem @select="() => runCommand(() => setOpen(false))">
+            <CreditCard class="mr-2 h-4 w-4" />
+            결제
+            <CommandShortcut>⌘B</CommandShortcut>
+          </CommandItem>
+          <CommandItem @select="() => runCommand(() => setOpen(false))">
+            <Settings class="mr-2 h-4 w-4" />
+            설정
+            <CommandShortcut>⌘S</CommandShortcut>
+          </CommandItem>
+        </CommandGroup>
+      </CommandList>
+    </CommandDialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+import {
+  Calculator,
+  Calendar,
+  CreditCard,
+  Settings,
+  Smile,
+  User,
+} from 'lucide-vue-next'
+
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from '@/components/ui/command'
+
+const open = ref(false)
+
+const setOpen = (value: boolean) => {
+  open.value = value
+}
+
+const runCommand = (command: Function) => {
+  setOpen(false)
+  command()
+}
+
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (e.key === 'j' && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault()
+    setOpen(!open.value)
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyDown)
+})
+</script>
+```
+
+## Combobox
+
+```vue
+<template>
+  <Popover v-model:open="open">
+    <PopoverTrigger as-child>
+      <Button
+        variant="outline"
+        role="combobox"
+        :aria-expanded="open"
+        class="w-[200px] justify-between"
+      >
+        {{ value
+          ? frameworks.find((framework) => framework.value === value)?.label
+          : "프레임워크 선택..." }}
+        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent class="w-[200px] p-0">
+      <Command>
+        <CommandInput placeholder="프레임워크 검색..." />
+        <CommandEmpty>프레임워크를 찾을 수 없습니다.</CommandEmpty>
+        <CommandGroup>
+          <CommandItem
+            v-for="framework in frameworks"
+            :key="framework.value"
+            :value="framework.value"
+            @select="(ev) => {
+              if (typeof ev.detail.value === 'string') {
+                value = ev.detail.value
+              }
+              open = false
+            }"
+          >
+            <Check
+              :class="[
+                'mr-2 h-4 w-4',
+                value === framework.value ? 'opacity-100' : 'opacity-0',
+              ]"
+            />
+            {{ framework.label }}
+          </CommandItem>
+        </CommandGroup>
+      </Command>
+    </PopoverContent>
+  </Popover>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Check, ChevronsUpDown } from 'lucide-vue-next'
+
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from '@/components/ui/command'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+
+const frameworks = [
+  { value: 'next.js', label: 'Next.js' },
+  { value: 'sveltekit', label: 'SvelteKit' },
+  { value: 'nuxt.js', label: 'Nuxt.js' },
+  { value: 'remix', label: 'Remix' },
+  { value: 'astro', label: 'Astro' },
+]
+
+const open = ref(false)
+const value = ref('')
+</script>
+```
+
+## Menubar
+
+```vue
+<template>
+  <Menubar>
+    <MenubarMenu>
+      <MenubarTrigger>파일</MenubarTrigger>
+      <MenubarContent>
+        <MenubarItem>
+          새 탭 <MenubarShortcut>⌘T</MenubarShortcut>
+        </MenubarItem>
+        <MenubarItem>
+          새 창 <MenubarShortcut>⌘N</MenubarShortcut>
+        </MenubarItem>
+        <MenubarItem disabled>새 시크릿 창</MenubarItem>
+        <MenubarSeparator />
+        <MenubarSub>
+          <MenubarSubTrigger>공유</MenubarSubTrigger>
+          <MenubarSubContent>
+            <MenubarItem>이메일 링크</MenubarItem>
+            <MenubarItem>메시지</MenubarItem>
+            <MenubarItem>메모</MenubarItem>
+          </MenubarSubContent>
+        </MenubarSub>
+        <MenubarSeparator />
+        <MenubarItem>
+          인쇄... <MenubarShortcut>⌘P</MenubarShortcut>
+        </MenubarItem>
+      </MenubarContent>
+    </MenubarMenu>
+
+    <MenubarMenu>
+      <MenubarTrigger>편집</MenubarTrigger>
+      <MenubarContent>
+        <MenubarItem>
+          실행 취소 <MenubarShortcut>⌘Z</MenubarShortcut>
+        </MenubarItem>
+        <MenubarItem>
+          다시 실행 <MenubarShortcut>⇧⌘Z</MenubarShortcut>
+        </MenubarItem>
+        <MenubarSeparator />
+        <MenubarSub>
+          <MenubarSubTrigger>찾기</MenubarSubTrigger>
+          <MenubarSubContent>
+            <MenubarItem>웹에서 검색</MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem>찾기...</MenubarItem>
+            <MenubarItem>다음 찾기</MenubarItem>
+            <MenubarItem>이전 찾기</MenubarItem>
+          </MenubarSubContent>
+        </MenubarSub>
+        <MenubarSeparator />
+        <MenubarItem>잘라내기</MenubarItem>
+        <MenubarItem>복사</MenubarItem>
+        <MenubarItem>붙여넣기</MenubarItem>
+      </MenubarContent>
+    </MenubarMenu>
+
+    <MenubarMenu>
+      <MenubarTrigger>보기</MenubarTrigger>
+      <MenubarContent>
+        <MenubarCheckboxItem>항상 즐겨찾기 표시줄 보기</MenubarCheckboxItem>
+        <MenubarCheckboxItem checked>항상 전체 URL 보기</MenubarCheckboxItem>
+        <MenubarSeparator />
+        <MenubarItem inset>
+          다시로드 <MenubarShortcut>⌘R</MenubarShortcut>
+        </MenubarItem>
+        <MenubarItem disabled inset>
+          강제 다시로드 <MenubarShortcut>⇧⌘R</MenubarShortcut>
+        </MenubarItem>
+        <MenubarSeparator />
+        <MenubarItem inset>전체 화면으로 전환</MenubarItem>
+        <MenubarSeparator />
+        <MenubarItem inset>개발자 도구 숨기기</MenubarItem>
+      </MenubarContent>
+    </MenubarMenu>
+  </Menubar>
+</template>
+
+<script setup lang="ts">
+import {
+  Menubar,
+  MenubarCheckboxItem,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+} from '@/components/ui/menubar'
+</script>
+```
+
+## Pagination
+
+```vue
+<template>
+  <Pagination
+    v-slot="{ page }"
+    :total="100"
+    :sibling-count="1"
+    show-edges
+    :default-page="2"
+  >
+    <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+      <PaginationFirst />
+      <PaginationPrev />
+
+      <template v-for="(item, index) in items">
+        <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
+          <Button class="w-10 h-10 p-0" :variant="item.value === page ? 'default' : 'outline'">
+            {{ item.value }}
+          </Button>
+        </PaginationListItem>
+        <PaginationEllipsis v-else :key="item.type" :index="index" />
+      </template>
+
+      <PaginationNext />
+      <PaginationLast />
+    </PaginationList>
+  </Pagination>
+</template>
+
+<script setup lang="ts">
+import {
+  Pagination,
+  PaginationEllipsis,
+  PaginationFirst,
+  PaginationLast,
+  PaginationList,
+  PaginationListItem,
+  PaginationNext,
+  PaginationPrev,
+} from '@/components/ui/pagination'
+
+import { Button } from '@/components/ui/button'
+</script>
+```
+
+## Tabs
+
+```vue
+<template>
+  <Tabs default-value="account" class="w-[400px]">
+    <TabsList class="grid w-full grid-cols-2">
+      <TabsTrigger value="account">계정</TabsTrigger>
+      <TabsTrigger value="password">비밀번호</TabsTrigger>
+    </TabsList>
+    <TabsContent value="account" class="space-y-2">
+      <div class="space-y-1">
+        <Label for="name">이름</Label>
+        <Input id="name" default-value="Pedro Duarte" />
+      </div>
+      <div class="space-y-1">
+        <Label for="username">사용자명</Label>
+        <Input id="username" default-value="@peduarte" />
+      </div>
+    </TabsContent>
+    <TabsContent value="password" class="space-y-2">
+      <div class="space-y-1">
+        <Label for="current">현재 비밀번호</Label>
+        <Input id="current" type="password" />
+      </div>
+      <div class="space-y-1">
+        <Label for="new">새 비밀번호</Label>
+        <Input id="new" type="password" />
+      </div>
+    </TabsContent>
+  </Tabs>
+</template>
+
+<script setup lang="ts">
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs'
+</script>
+```
+
+## 접근성 고려사항
+
+- 키보드 내비게이션이 모든 컴포넌트에서 지원됩니다
+- ARIA 레이블과 역할이 적절히 설정됩니다
+- 포커스 관리가 자동으로 처리됩니다
+- 스크린 리더 사용자를 위한 적절한 텍스트가 제공됩니다
