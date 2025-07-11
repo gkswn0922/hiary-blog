@@ -70,6 +70,11 @@
 import Avatar from '@/components/ui/avatar.vue'
 import AvatarFallback from '@/components/ui/avatar-fallback.vue'
 import AvatarImage from '@/components/ui/avatar-image.vue'
+
+// 외부 링크 열기 함수
+const navigateTo = (url: string) => {
+  window.open(url, '_blank')
+}
 </script>
 
 <style scoped>
@@ -83,7 +88,6 @@ import AvatarImage from '@/components/ui/avatar-image.vue'
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: color 0.2s ease;
 }
 
 .social-icon:hover {

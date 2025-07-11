@@ -60,14 +60,13 @@ const props = defineProps<SeriesCardProps>()
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.2s ease;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
 }
 
 .series-card:hover {
-    transform: translateY(-2px);
+    background: #FAFAFA;
 }
 
 .image-container {

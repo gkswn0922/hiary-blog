@@ -78,19 +78,12 @@ const toggleFollow = () => {
   font-weight: 500;
   color: #09090B;
   cursor: pointer;
-  transition: all 0.3s ease;
-  transform: scale(1);
   position: relative;
   text-decoration: none;
 }
 
 .nav-item:hover {
   background-color: rgba(244, 244, 245, 0.5);
-  transform: scale(1.05);
-}
-
-.nav-item:active {
-  transform: scale(0.95);
 }
 
 .nav-item-active {
@@ -110,8 +103,6 @@ const toggleFollow = () => {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  transform: scale(1);
   box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
   min-width: 88px;
   justify-content: center;
@@ -121,16 +112,11 @@ const toggleFollow = () => {
   background-color: #1d4ed8;
   border-color: #1d4ed8;
   color: white;
-  transform: scale(1.05);
   box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.15);
 }
 
 .follow-button:hover .follow-icon {
   color: white;
-}
-
-.follow-button:active {
-  transform: scale(0.95);
 }
 
 .follow-button.following {
@@ -157,7 +143,6 @@ const toggleFollow = () => {
   width: 16px;
   height: 16px;
   color: white;
-  transition: all 0.2s ease;
 }
 
 .logo-text {
@@ -165,12 +150,9 @@ const toggleFollow = () => {
   font-weight: 600;
   color: #09090B;
   cursor: pointer;
-  transition: all 0.3s ease;
-  transform: scale(1);
 }
 
 .logo-text:hover {
   color: #2563EB;
-  transform: scale(1.05);
 }
 </style>

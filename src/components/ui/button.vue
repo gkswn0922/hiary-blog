@@ -25,7 +25,7 @@ defineEmits<{
 }>()
 
 const buttonClasses = computed(() => {
-  const baseClasses = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 cursor-pointer'
+  const baseClasses = 'inline-flex items-center justify-center rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 cursor-pointer'
 
   const variantClasses = {
     default: 'bg-blue-600 text-white hover:bg-blue-700',

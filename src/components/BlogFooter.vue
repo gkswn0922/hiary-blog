@@ -33,11 +33,7 @@
   font-size: 14px;
   line-height: 1.43;
   color: #71717A;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.2s ease;
+  text-decoration: none;
 }
 
 .footer-link:hover {

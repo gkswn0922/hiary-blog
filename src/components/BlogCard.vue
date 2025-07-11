@@ -202,11 +202,10 @@ const props = defineProps<BlogCardProps>()
   gap: 8px;
   background: transparent;
   border: none;
-  /* border-radius: 6px; */
+  border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
   width: auto;
-  transition: all 0.2s ease;
 }
 
 .more-button:hover {
