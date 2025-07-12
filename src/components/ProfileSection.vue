@@ -71,6 +71,7 @@ import Avatar from '@/components/ui/avatar.vue'
 import AvatarFallback from '@/components/ui/avatar-fallback.vue'
 import AvatarImage from '@/components/ui/avatar-image.vue'
 
+
 // 외부 링크 열기 함수
 const navigateTo = (url: string) => {
   window.open(url, '_blank')

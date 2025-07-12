@@ -51,18 +51,56 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// 팔로우 상태 관리
+
+// 팔로우 관련 상태
 const isFollowing = ref(false)
+const isLoading = ref(false)
 
 // 팔로우 토글 함수
-const toggleFollow = () => {
-  isFollowing.value = !isFollowing.value
+const toggleFollow = async () => {
+  isLoading.value = true
 
-  // 버튼 클릭 시 약간의 피드백 효과
-  if (isFollowing.value) {
-    console.log('팔로우 시작!')
-  } else {
-    console.log('팔로우 해제!')
+  try {
+    // API URL 설정
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+
+    // 방문한 사용자 ID
+    const visitedUserId = 'aiden_cho'
+
+    // 팔로우 상태
+    const newFollowStatus = !isFollowing.value
+
+    // POST 요청 데이터
+    const requestData = {
+      user_id: visitedUserId,
+      follow_status: newFollowStatus
+    }
+
+    // API 호출
+    const response = await fetch(`${API_URL}/follow`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const result = await response.json()
+
+    // 성공시 상태 업데이트
+    isFollowing.value = newFollowStatus
+
+    console.log('Follow success', result)
+
+  } catch (error) {
+    console.error('Follow failed', error)
+
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
