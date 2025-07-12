@@ -66,7 +66,7 @@ import ProfileSection from '@/components/ProfileSection.vue'
 import BlogCard from '@/components/BlogCard.vue'
 import BlogFooter from '@/components/BlogFooter.vue'
 
-// 간단한 타입 정의
+// 타입 정의
 interface BlogPost {
   blog_name: string
   desc: string
