@@ -105,7 +105,9 @@ const loadBlogPosts = async () => {
     // const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
     // const USER_ID = 'user123'
 
-    // const response = await fetch(`${API_URL}/blogs?userId=${USER_ID}&limit=6`)
+    // const VISIT_USER_ID = 'user1234'
+
+    // const response = await fetch(`${API_URL}/blogs?userId=${USER_ID}?userId=${VISIT_USER_ID}`)
 
     // if (!response.ok) {
     //   throw new Error(`HTTP error! status: ${response.status}`)
