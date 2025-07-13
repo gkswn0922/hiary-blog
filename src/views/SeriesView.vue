@@ -145,22 +145,15 @@ const loadSeriesData = async () => {
             title: "XGBoost와 LightGBM의 깊은 이해와 현업 적용",
             description: "Python API와 sklearn wrapper의 차이점을 분석하고, GOSS 알고리즘의 실제 구현과 논문의 차이를 발견했습니다. Gradient 기반 데이터 중요도 평가 방식을 이해하고 실전 적용 방법을 학습했습니다.",
             tags: "XGBoost, LightGBM, Gradient",
-            date: "2025년 9월 1일"
+            date: "2025-09-01"
           },
           {
             id: 2,
             title: "Attention 메커니즘과 Transformer 구조 이해",
             description: "RNN의 발전된 형태인 Attention 메커니즘의 작동 원리를 학습했습니다. Self-attention부터 Transformer 아키텍처까지 구현하며, 왜 이 기술이 NLP의 표준이 되었는지 이해했습니다.",
             tags: "Attention, Transformer, NLP",
-            date: "2025년 8월 30일"
+            date: "2025-08-30"
           },
-          {
-            id: 3,
-            title: "YOLO 알고리즘 구현과 객체 탐지 실습",
-            description: "실시간 객체 탐지의 대표 모델인 YOLO를 처음부터 구현해보았습니다. Grid cell의 개념부터 Anchor box 설정, IoU 계산까지 직접 코딩하면서 One-stage detector의 작동 원리를 완벽히 이해했습니다.",
-            tags: "Computer Vision, YOLO, Object Detection",
-            date: "2025년 8월 27일"
-          }
         ]
       },
       {
@@ -173,22 +166,15 @@ const loadSeriesData = async () => {
             title: "Circuit Breaker 패턴으로 마이크로서비스 안정성 확보",
             description: "Spring Cloud Netflix Hystrix를 사용하여 마이크로서비스 간 장애 전파를 방지하는 방법을 학습했습니다. 실제 주문 서비스와 결제 서비스 간의 통신에서 Circuit Breaker를 적용하고, fallback 메서드 구현과 대시보드 모니터링 설정까지 완료했습니다.",
             tags: "Spring Boot, MSA, Circuit Breaker",
-            date: "2025년 8월 20일"
+            date: "2025-08-20"
           },
           {
             id: 5,
             title: "Redis를 활용한 캐싱 전략과 성능 최적화",
             description: "API 응답 시간을 80% 단축시킨 Redis 캐싱 전략을 정리했습니다. Cache-Aside 패턴 구현부터 TTL 설정, 캐시 무효화 정책까지 실제 적용 사례를 분석했고, Redis Cluster 구성으로 고가용성을 확보하는 방법을 학습했습니다.",
             tags: "Redis, Caching, Performance",
-            date: "2025년 8월 15일"
+            date: "2025-08-15"
           },
-          {
-            id: 6,
-            title: "Docker와 Kubernetes를 활용한 컨테이너 오케스트레이션",
-            description: "도커 컨테이너를 Kubernetes 클러스터에 배포하는 전 과정을 실습했습니다. Deployment, Service, Ingress 설정부터 ConfigMap과 Secret 관리, 모니터링을 위한 Prometheus와 Grafana 구성까지 complete DevOps 파이프라인을 구축했습니다.",
-            tags: "Docker, Kubernetes, DevOps",
-            date: "2025년 8월 10일"
-          }
         ]
       },
       {
@@ -201,14 +187,14 @@ const loadSeriesData = async () => {
             title: "React 18의 새로운 기능들과 성능 최적화",
             description: "React 18에서 도입된 Concurrent Features와 Suspense를 실제 프로젝트에 적용해보았습니다. useTransition과 useDeferredValue를 활용한 성능 최적화 방법을 학습하고, 번들 사이즈 최적화와 코드 스플리팅 전략을 정리했습니다.",
             tags: "React, React 18, Performance",
-            date: "2025년 8월 5일"
+            date: "2025-08-05"
           },
           {
             id: 8,
             title: "Vue 3 Composition API와 TypeScript 통합",
             description: "Vue 3의 Composition API를 TypeScript와 함께 사용하는 방법을 학습했습니다. ref, reactive, computed의 타입 추론부터 custom composables 작성까지, 타입 안정성을 확보하면서 개발 생산성을 높이는 패턴들을 정리했습니다.",
             tags: "Vue.js, TypeScript, Composition API",
-            date: "2025년 8월 1일"
+            date: "2025-08-01"
           }
         ]
       }
